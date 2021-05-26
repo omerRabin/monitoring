@@ -62,7 +62,6 @@ def main():
     # add the case if none from the date to do on another date
     date1 = "2021.5.24 18:32:40"
     date2 = "2021.5.24 18:38:43"
-    # 2021.5.24 16:32:40,2021.5.24 18:32:40 input for the gui
     file_stamp = Manual(date1, date2)
     # file_stamp.file_by_stamp()
     d = file_stamp.devide_to_samplings()
