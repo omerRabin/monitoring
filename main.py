@@ -12,12 +12,63 @@ window = Tk()
 name = StringVar()
 window.title("The Monitor Of Omer And Itamar")
 
-label1 = Label(window, text="Look At the last message at serviceList to view the differences", fg="black",
+label1 = Label(window, text="Look At the last message at Status_Log.txt to view the differences", fg="Blue",
                font="Times 22",
                width=50)
 label1.grid()
 label1.grid_forget()
 flag = True
+
+# date_hour1 = Entry(window, width=30, textvariable=name)
+# date_hour1.grid(column=0, row=2)
+
+# date_hour2 = Entry(window, width=30, textvariable=name)
+# date_hour2.grid(column=0, row=3)
+
+#date_hour1 = Entry(window)
+#date_hour1.insert(0, "")
+#date_hour2 = Entry(window)
+#date_hour2.insert(0, "")
+
+date_hour1_var = StringVar()
+date_hour1_var.set("")
+date_hour1 = Entry(window,text=date_hour1_var)
+date_hour1.grid(column=0,row=2)
+date_hour2_var = StringVar()
+date_hour2_var.set("")
+date_hour2 = Entry(window,text=date_hour2_var)
+date_hour2.grid(column=0,row=3)
+
+def click_me2():
+    t = threading.Thread(target=worker2)
+    if not t.is_alive():
+        t.start()
+
+
+button1 = Button(window, text="Enter", command=click_me2)
+button1.grid(column=0, row=6)
+date_hour1.grid_remove()
+date_hour2.grid_remove()
+button1.grid_remove()
+label = Label(window,
+              text="Enter the first date&hour and then second date&hour to take a sampling in format '0000.00.00 00:00:00'-The earliest in the upper text box. You Must Choose a date with exactly the same day from the dates exists in the service list!")
+label.grid(column=0, row=12)
+label.grid_remove()
+
+
+def clickMe():
+    t1.start()
+
+
+label_x = Label(window, text="Enter a few seconds for which each time the machine performs a service sampling")
+label_x.grid(column=0, row=2)
+x_sec = Entry(window, width=30, textvariable=name)
+x_sec.grid(column=0, row=4)
+button = Button(window, text="Click", command=clickMe)
+button.grid(column=0, row=5)
+label_x.grid_remove()
+x_sec.grid_remove()
+button.grid_remove()
 
 
 def worker():
@@ -31,26 +82,24 @@ def worker():
 t1 = threading.Thread(target=worker)
 
 
-def clickMe():
-    t1.start()
-
-
 def monitor_mode():
+    label.grid_remove()
+    button1.grid_remove()
+    date_hour1.grid_remove()
+    date_hour2.grid_remove()
     if 'label1' in globals():
         label1.grid_remove()
-    label = Label(window, text="Enter a few seconds for which each time the machine performs a service sampling")
-    label.grid(column=0, row=2)
-    x_sec = Entry(window, width=30, textvariable=name)
-    x_sec.grid(column=0, row=4)
-    button = Button(window, text="Click", command=clickMe)
-    button.grid(column=0, row=5)
+    x_sec.grid()
+    button.grid()
+    label_x.grid()
 
 
 def worker2():
-    date_hour_of_2_stamps = str(name.get())
-    l = date_hour_of_2_stamps.split(",")
-    firstparam = l[0]
-    secondparam = l[1]
+    #date_hour_of_2_stamps = str(name.get())
+    date_hour_of_first_stamp = str(date_hour1_var.get())
+    date_hour_of_second_stamp = str(date_hour2_var.get())
+    firstparam = date_hour_of_first_stamp
+    secondparam = date_hour_of_second_stamp
     m_m = Manual(firstparam, secondparam)
     stamp1 = m_m.closet_sampling_by_date(firstparam)
     stamp2 = m_m.closet_sampling_by_date(secondparam)
@@ -65,25 +114,20 @@ def worker2():
         label1.grid()
 
 
-def click_me2():
-    t = threading.Thread(target=worker2)
-    if not t.is_alive():
-        t.start()
-
-
 def enter_date_and_hour():
-    label = Label(window, text="Enter the first date&hour then ',' and then second date&hour to take a sampling ")
-    label.grid(column=0, row=2)
-    date_hour = Entry(window, width=30, textvariable=name)
-    date_hour.grid(column=0, row=4)
-    button = Button(window, text="Enter", command=click_me2)
-    button.grid(column=0, row=5)
+    label.grid()
 
 
 def manual_mode():
     global flag
     flag = False
+    date_hour1.grid()
+    date_hour2.grid()
+    button1.grid()
     enter_date_and_hour()
+    x_sec.grid_remove()
+    label_x.grid_remove()
+    button.grid_remove()
 
 
 def show_service_list():
@@ -99,10 +143,10 @@ def gui():
     window.geometry("1100x600")
     title = Label(window, text="welcome to our Monitoring software", bg="red", fg="white", font="Times 32",
                   width=40)
-    title.grid()
+    title.grid(column=0, row=17)
     label1 = Label(window, text="Please select the monitor mode you want to turn on:", fg="black", font="Times 22",
                    width=50)
-    label1.grid()
+    label1.grid(column=0, row=20)
 
     # Creating a Button
     btn1 = Button(window, text='Monitor Mode', command=monitor_mode)
@@ -111,9 +155,9 @@ def gui():
     btn2 = Button(window, text='Manual Mode', command=manual_mode)
 
     # Set the position of button on the top of window.
-    btn1.place(x=400, y=200)
+    btn1.place(x=400, y=300)
     btn1.config(font=30)
-    btn2.place(x=600, y=200)
+    btn2.place(x=600, y=300)
     btn2.config(font=30)
     os_button = Button(window, text="Open service list", command=show_service_list)
     os_button.place(x=400, y=500)
