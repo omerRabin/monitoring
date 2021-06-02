@@ -13,6 +13,9 @@ class File_sampling:
         self.previous = None
         self.new = None
 
+    def set_sleep_val(self, sleep_val):
+        self.sleep_val = sleep_val
+
     def set_file_service(self):
         self.serviceList = open('serviceList.txt', 'a')
         if self.previous is None:
