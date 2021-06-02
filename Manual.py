@@ -11,7 +11,6 @@ class Manual:
         # self.month = datetime.date.today().month
         txt = open("serviceList.txt", 'r')
         self.file_split = str(txt.read()).split("========================================")
-        print(self.file_split)
         self.file_stamp = []
         index = 0
         num = 0
@@ -19,10 +18,7 @@ class Manual:
             if ":" in i or str(self.year) in i:
                 self.file_stamp.append(i)
 
-    # print(self.file_stamp)
-
     def devide_to_samplings(self):
-        print(self.file_split)
         dict = {}
         for i in self.file_split:
             index1 = i.find("\ndate:")
@@ -30,10 +26,12 @@ class Manual:
             if index1 < 0 or index2 < 0:
                 continue
             key1 = i[index1 + 7:index2]
-            k = i.find("\n\n")  # the first occurrence of \n\n
+            # k = i.find("\n\n")  # the first occurrence of \n\n
+            k = i.find("\n\nServices List")
             key2 = i[index2 + 6:k]
             date_and_hour = key1 + key2
             dict[date_and_hour] = i
+        print(dict)
         return dict
 
     def closet_sampling_by_hour(self, l: list, hour: str):
