@@ -21,6 +21,7 @@ class Samp:
                 pass
         samp = "\n========================================\n"
         samp += self.s_date +"\n" + self.s_hour + "\n"
+        samp += "\nServices List:\n"
         for i in self.e_set:
             samp += i + "\n"
         self.sample = samp
