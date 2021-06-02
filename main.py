@@ -1,9 +1,8 @@
-from os import startfile
+import os, sys, subprocess
 from tkinter import *
 import threading
 from Manual import Manual
 from tkinter.filedialog import askopenfilename
-
 import Samp
 from Samp import Samp
 from File_sampling import File_sampling
@@ -18,17 +17,6 @@ label1 = Label(window, text="Look At the last message at Status_Log.txt to view 
 label1.grid()
 label1.grid_forget()
 flag = True
-
-# date_hour1 = Entry(window, width=30, textvariable=name)
-# date_hour1.grid(column=0, row=2)
-
-# date_hour2 = Entry(window, width=30, textvariable=name)
-# date_hour2.grid(column=0, row=3)
-
-#date_hour1 = Entry(window)
-#date_hour1.insert(0, "")
-#date_hour2 = Entry(window)
-#date_hour2.insert(0, "")
 
 date_hour1_var = StringVar()
 date_hour1_var.set("")
@@ -57,7 +45,11 @@ label.grid_remove()
 
 
 def clickMe():
-    t1.start()
+    if not t1.is_alive():
+        t1.start()
+    else:
+        global flag
+        flag = True
 
 
 label_x = Label(window, text="Enter a few seconds for which each time the machine performs a service sampling")
@@ -93,9 +85,9 @@ def monitor_mode():
     button.grid()
     label_x.grid()
 
-
+# 2021.6.2 7:39:27
+# 2021.6.2 7:39:39
 def worker2():
-    #date_hour_of_2_stamps = str(name.get())
     date_hour_of_first_stamp = str(date_hour1_var.get())
     date_hour_of_second_stamp = str(date_hour2_var.get())
     firstparam = date_hour_of_first_stamp
@@ -129,14 +121,20 @@ def manual_mode():
     label_x.grid_remove()
     button.grid_remove()
 
-
 def show_service_list():
-    startfile(f"serviceList.txt")
+    if sys.platform == "win32":
+        os.startfile(f"serviceList.txt")
+    else:
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, "serviceList.txt"])
 
 
 def show_Status_log():
-    startfile(f"Status_Log.txt")
-
+    if sys.platform == "win32":
+        os.startfile(f"Status_Log.txt")
+    else:
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, "Status_Log.txt"])
 
 def gui():
     # set window size
