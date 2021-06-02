@@ -20,18 +20,19 @@ flag = True
 
 date_hour1_var = StringVar()
 date_hour1_var.set("")
-date_hour1 = Entry(window,text=date_hour1_var)
-date_hour1.grid(column=0,row=2)
+date_hour1 = Entry(window, text=date_hour1_var)
+date_hour1.grid(column=0, row=2)
 date_hour2_var = StringVar()
 date_hour2_var.set("")
-date_hour2 = Entry(window,text=date_hour2_var)
-date_hour2.grid(column=0,row=3)
+date_hour2 = Entry(window, text=date_hour2_var)
+date_hour2.grid(column=0, row=3)
+
+sleep_Val=100
 
 def click_me2():
     t = threading.Thread(target=worker2)
     if not t.is_alive():
         t.start()
-
 
 button1 = Button(window, text="Enter", command=click_me2)
 button1.grid(column=0, row=6)
@@ -45,6 +46,8 @@ label.grid_remove()
 
 
 def clickMe():
+    global sleep_Val
+    sleep_Val = int(name.get())
     if not t1.is_alive():
         t1.start()
     else:
@@ -64,9 +67,11 @@ button.grid_remove()
 
 
 def worker():
+    global sleep_Val
     sleep_Val = int(name.get())
     f_s = File_sampling(sleep_Val)
     while flag:
+        f_s.set_sleep_val(sleep_Val)
         f_s.set_file_service()
         f_s.set_file_log()
 
@@ -84,6 +89,7 @@ def monitor_mode():
     x_sec.grid()
     button.grid()
     label_x.grid()
+
 
 # 2021.6.2 7:39:27
 # 2021.6.2 7:39:39
@@ -121,6 +127,7 @@ def manual_mode():
     label_x.grid_remove()
     button.grid_remove()
 
+
 def show_service_list():
     if sys.platform == "win32":
         os.startfile(f"serviceList.txt")
@@ -135,6 +142,7 @@ def show_Status_log():
     else:
         opener = "open" if sys.platform == "darwin" else "xdg-open"
         subprocess.call([opener, "Status_Log.txt"])
+
 
 def gui():
     # set window size
