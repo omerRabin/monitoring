@@ -67,6 +67,5 @@ def main():
     s = file_stamp.closet_sampling_by_date(date1)
     print(s)
 
-
 if __name__ == "__main__":
     main()
