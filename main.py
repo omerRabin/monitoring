@@ -6,6 +6,9 @@ from tkinter.filedialog import askopenfilename
 import Samp
 from Samp import Samp
 from File_sampling import File_sampling
+from datetime import datetime
+import re
+import time
 
 window = Tk()
 name = StringVar()
@@ -27,12 +30,14 @@ date_hour2_var.set("")
 date_hour2 = Entry(window, text=date_hour2_var)
 date_hour2.grid(column=0, row=3)
 
-sleep_Val=100
+sleep_Val = 100
+
 
 def click_me2():
     t = threading.Thread(target=worker2)
     if not t.is_alive():
         t.start()
+
 
 button1 = Button(window, text="Enter", command=click_me2)
 button1.grid(column=0, row=6)
@@ -44,15 +49,27 @@ label = Label(window,
 label.grid(column=0, row=12)
 label.grid_remove()
 
+warningLbl = Label(window, text="Not Like the Format, try again please")
+warningLbl.grid(column=0, row=2)
+warningLbl.grid_remove()
+
 
 def clickMe():
     global sleep_Val
-    sleep_Val = int(name.get())
-    if not t1.is_alive():
-        t1.start()
+    str_check = name.get()
+    if str_check.isnumeric():
+        sleep_Val = int(str_check)
+        if not t1.is_alive():
+            global flag
+            flag = True
+            t1.start()
+        else:
+            # global flag
+            flag = True
     else:
-        global flag
-        flag = True
+        global warningLbl
+        warningLbl.grid()
+        label_x.grid_remove()
 
 
 label_x = Label(window, text="Enter a few seconds for which each time the machine performs a service sampling")
@@ -67,10 +84,13 @@ button.grid_remove()
 
 
 def worker():
+    warningLbl.grid_remove()
     global sleep_Val
     sleep_Val = int(name.get())
     f_s = File_sampling(sleep_Val)
     while flag:
+        warningLbl.grid_remove()
+        label_x.grid()
         f_s.set_sleep_val(sleep_Val)
         f_s.set_file_service()
         f_s.set_file_log()
@@ -89,6 +109,7 @@ def monitor_mode():
     x_sec.grid()
     button.grid()
     label_x.grid()
+    warningLbl.grid_remove()
 
 
 # 2021.6.2 7:39:27
@@ -96,20 +117,46 @@ def monitor_mode():
 def worker2():
     date_hour_of_first_stamp = str(date_hour1_var.get())
     date_hour_of_second_stamp = str(date_hour2_var.get())
-    firstparam = date_hour_of_first_stamp
-    secondparam = date_hour_of_second_stamp
-    m_m = Manual(firstparam, secondparam)
-    stamp1 = m_m.closet_sampling_by_date(firstparam)
-    stamp2 = m_m.closet_sampling_by_date(secondparam)
-    f_s = File_sampling(0)
-    # this function will return a string represent the difference file
 
-    differ = f_s.compare_two_stamps(stamp1, stamp2)  # the output of this mode - convert to button open a txt file
-    f = open("Status_Log.txt", "a")
-    f.write(differ)
-    f.close()
-    if 'label1' in globals():
-        label1.grid()
+    # check format:
+
+    year = datetime.today().year
+    month = datetime.today().month
+    date = datetime.today().day
+
+    currDate = str(year) + "." + str(month) + "." + str(date)
+
+    date1 = date_hour_of_first_stamp.split(" ")[0]
+    date2 = date_hour_of_second_stamp.split(" ")[0]
+    if date1 == currDate and date2 == currDate:
+        matched1 = re.match("(24:00|2[0-3]:[0-5][0-9]|[0-1][0-9]:[0-5][0-9])", date_hour_of_first_stamp.split(" ")[1])
+        matched2 = re.match("(24:00|2[0-3]:[0-5][0-9]|[0-1][0-9]:[0-5][0-9])", date_hour_of_second_stamp.split(" ")[1])
+        is_match1 = bool(matched1)
+        is_match2 = bool(matched2)
+        if is_match1 == True and is_match2 == True:
+            firstparam = date_hour_of_first_stamp
+            secondparam = date_hour_of_second_stamp
+            m_m = Manual(firstparam, secondparam)
+            stamp1 = m_m.closet_sampling_by_date(firstparam)
+            stamp2 = m_m.closet_sampling_by_date(secondparam)
+            f_s = File_sampling(0)
+            # this function will return a string represent the difference file
+
+            differ = f_s.compare_two_stamps(stamp1, stamp2)  # the output of this mode - convert to button open a txt file
+            f = open("Status_Log.txt", "a")
+            f.write(differ)
+            f.close()
+            if 'label1' in globals():
+                label1.grid()
+    else:
+        warningLbl.grid()
+        date_hour1.grid_remove()
+        date_hour2.grid_remove()
+        time.sleep(1)
+        warningLbl.grid_remove()
+        date_hour1.grid()
+        date_hour2.grid()
+
 
 
 def enter_date_and_hour():
@@ -126,6 +173,7 @@ def manual_mode():
     x_sec.grid_remove()
     label_x.grid_remove()
     button.grid_remove()
+    warningLbl.grid_remove()
 
 
 def show_service_list():
